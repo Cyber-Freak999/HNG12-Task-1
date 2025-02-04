@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from app.models import NumberResponse, ErrorResponse
+from app.models import NumberResponse
 from app.services import classify_number
 
 app = FastAPI()
@@ -15,9 +15,8 @@ app.add_middleware(
 
 
 @app.get("/api/classify-number", response_model=NumberResponse)
-async def classify_number_endpoint(number: int = Query(..., description="Number to classify")):
+async def classify_number_endpoint(number: str = Query(...)):
     try:
-        return classify_number(number)
+        return classify_number(int(number))
     except ValueError:
-        raise HTTPException(status_code=400, detail={
-                            "number": number, "error": True})
+        raise HTTPException(status_code=400, detail={"number": number, "error": True})
